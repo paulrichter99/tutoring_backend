@@ -2,6 +2,7 @@ package com.paulrichter.tutoring.payload.request;
 
 import java.util.Set;
 
+import com.paulrichter.tutoring.model.User;
 import jakarta.validation.constraints.*;
 
 public class SignupRequest {
@@ -14,6 +15,14 @@ public class SignupRequest {
     @NotBlank
     @Size(min = 6, max = 40)
     private String password;
+
+    public SignupRequest() {
+    }
+
+    public SignupRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 
     public String getUsername() {
         return username;
