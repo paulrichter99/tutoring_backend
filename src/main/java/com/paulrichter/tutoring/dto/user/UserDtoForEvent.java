@@ -1,4 +1,4 @@
-package com.paulrichter.tutoring.dto;
+package com.paulrichter.tutoring.dto.user;
 
 import java.io.Serializable;
 import java.util.Objects;

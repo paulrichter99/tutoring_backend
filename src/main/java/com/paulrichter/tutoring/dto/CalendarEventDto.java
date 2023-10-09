@@ -1,5 +1,6 @@
 package com.paulrichter.tutoring.dto;
 
+import com.paulrichter.tutoring.dto.user.UserDtoForEvent;
 import com.paulrichter.tutoring.model.CalendarDate;
 import com.paulrichter.tutoring.model.CalendarEvent;
 import com.paulrichter.tutoring.model.User;
