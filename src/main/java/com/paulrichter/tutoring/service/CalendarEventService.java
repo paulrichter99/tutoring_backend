@@ -1,12 +1,8 @@
 package com.paulrichter.tutoring.service;
 
 import com.paulrichter.tutoring.dto.CalendarEventDto;
-import com.paulrichter.tutoring.dto.UserDtoForEvent;
-import com.paulrichter.tutoring.model.CalendarDate;
 import com.paulrichter.tutoring.model.CalendarEvent;
-import com.paulrichter.tutoring.model.User;
 import com.paulrichter.tutoring.repository.CalendarEventRepository;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

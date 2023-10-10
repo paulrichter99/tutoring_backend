@@ -1,6 +1,10 @@
-package com.paulrichter.tutoring.dto;
+package com.paulrichter.tutoring.dto.user;
+
+import com.paulrichter.tutoring.dto.CalendarEventDto;
+import com.paulrichter.tutoring.model.CalendarEvent;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -8,9 +12,14 @@ public class UserDto implements Serializable {
     private final String username;
     private final List<CalendarEventDto> calendarEvents;
 
-    public UserDto(String username, List<CalendarEventDto> calendarEvents) {
+    public UserDto(String username, List<CalendarEvent> calendarEvents) {
         this.username = username;
-        this.calendarEvents = calendarEvents;
+
+        List<CalendarEventDto> calendarEventDtoList = new ArrayList<>();
+        for(CalendarEvent event: calendarEvents){
+            calendarEventDtoList.add(new CalendarEventDto(event));
+        }
+        this.calendarEvents = calendarEventDtoList;
     }
 
     public String getUsername() {

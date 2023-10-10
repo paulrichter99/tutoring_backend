@@ -3,7 +3,9 @@ package com.paulrichter.tutoring.model;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -23,13 +25,9 @@ public class User {
     @JoinTable(name = "user_calendar_event")
     private List<CalendarEvent> calendarEvents = new ArrayList<>();
 
-    public List<CalendarEvent> getCalendarEvents() {
-        return calendarEvents;
-    }
+    @ManyToMany
+    private Set<Role> roles = new LinkedHashSet<>();
 
-    public void setCalendarEvents(List<CalendarEvent> calendarEvents) {
-        this.calendarEvents = calendarEvents;
-    }
 
     public User() {
     }
@@ -37,6 +35,22 @@ public class User {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public List<CalendarEvent> getCalendarEvents() {
+        return calendarEvents;
+    }
+
+    public void setCalendarEvents(List<CalendarEvent> calendarEvents) {
+        this.calendarEvents = calendarEvents;
     }
 
     public String getPassword() {

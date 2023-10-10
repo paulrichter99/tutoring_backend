@@ -17,7 +17,7 @@ public class CalendarEvent {
     @Column(name = "event_duration", nullable = false)
     private Integer eventDuration;
 
-    @ManyToMany(mappedBy = "calendarEvents", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "calendarEvents", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private List<User> eventUsers = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
