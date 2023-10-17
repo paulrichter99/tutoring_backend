@@ -1,8 +1,14 @@
 package com.paulrichter.tutoring.service;
 
+import com.paulrichter.tutoring.dto.CalendarDateDto;
 import com.paulrichter.tutoring.dto.CalendarEventDto;
+import com.paulrichter.tutoring.dto.CalendarEventForUserDto;
+import com.paulrichter.tutoring.model.CalendarDate;
 import com.paulrichter.tutoring.model.CalendarEvent;
+import com.paulrichter.tutoring.model.User;
+import com.paulrichter.tutoring.repository.CalendarDateRepository;
 import com.paulrichter.tutoring.repository.CalendarEventRepository;
+import com.paulrichter.tutoring.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,12 +18,16 @@ import java.util.Optional;
 @Service
 public class CalendarEventService {
     private final CalendarEventRepository calendarEventRepository;
+    private final UserRepository userRepository;
+    private final CalendarDateRepository calendarDateRepository;
 
-    public CalendarEventService (CalendarEventRepository calendarEventRepository){
+    public CalendarEventService (CalendarEventRepository calendarEventRepository, UserRepository userRepository, CalendarDateRepository calendarDateRepository){
         this.calendarEventRepository = calendarEventRepository;
+        this.userRepository = userRepository;
+        this.calendarDateRepository = calendarDateRepository;
     }
 
-    public CalendarEventDto findById(long id){
+    public CalendarEventDto findDtoById(long id){
         Optional<CalendarEvent> optionalCalendarEvent = calendarEventRepository.findById(id);
         if(optionalCalendarEvent.isEmpty()) return null;
 
@@ -26,7 +36,63 @@ public class CalendarEventService {
         return new CalendarEventDto(calendarEvent);
     }
 
-    public List<CalendarEventDto> findAll(){
+    public CalendarEventDto update(CalendarEvent calendarEvent){
+        Optional<CalendarEvent> optionalCalendarEvent = calendarEventRepository.findById(calendarEvent.getId());
+        if(optionalCalendarEvent.isEmpty()) return null;
+
+        CalendarEvent persistedEvent = optionalCalendarEvent.get();
+        persistedEvent.setEventName(calendarEvent.getEventName());
+        persistedEvent.setEventDuration(calendarEvent.getEventDuration());
+
+        List<User> userFromCalendarEvent = new ArrayList<>();
+        // make sure we get the correct persisted user
+        for(User eventUser: calendarEvent.getEventUsers()){
+            // TODO: We have to adjust/remove the event from the users, if cascading is not enough
+            //  -> Pls check
+            this.userRepository.findByUsername(eventUser.getUsername()).ifPresent(userFromCalendarEvent::add);
+        }
+        persistedEvent.setEventUsers(userFromCalendarEvent);
+        // same as user
+        List<CalendarDate> calendarDatesFromCalendarEvent = new ArrayList<>();
+        // make sure we get the correct persisted user
+        for(CalendarDate eventDate: calendarEvent.getEventDates()){
+            CalendarDate calendarDate = this.calendarDateRepository.findById(eventDate.getId()).orElse(null);
+            if(calendarDate == null){ return null; }
+
+            calendarDate.setDateTime(eventDate.getDateTime());
+            calendarDateRepository.save(calendarDate);
+            calendarDatesFromCalendarEvent.add(calendarDate);
+
+        }
+        persistedEvent.setEventDates(calendarDatesFromCalendarEvent);
+        calendarEventRepository.save(persistedEvent);
+
+        return new CalendarEventDto(persistedEvent);
+    }
+
+    public CalendarEventDto save(CalendarEvent calendarEvent){
+        // save the new CalendarEvent
+        calendarEventRepository.save(calendarEvent);
+
+        // set the calendarEventProperties for the user and date
+        for(User eventUser: calendarEvent.getEventUsers()){
+            this.userRepository.findByUsername(eventUser.getUsername()).ifPresent(user -> {user.getCalendarEvents().add(calendarEvent);});
+        }
+
+        for(CalendarDate eventDate: calendarEvent.getEventDates()){
+            CalendarDate calendarDate = this.calendarDateRepository.findById(eventDate.getId()).orElse(null);
+            if(calendarDate == null){ return null; }
+
+            calendarDate.setDateTime(eventDate.getDateTime());
+            calendarDate.setCalendarEvent(calendarEvent);
+
+            calendarDateRepository.save(calendarDate);
+        }
+        return new CalendarEventDto(calendarEvent);
+    }
+
+
+    public List<CalendarEventDto> findAllForAdmin(){
         List<CalendarEvent> calendarEvents = calendarEventRepository.findAll();
 
         List<CalendarEventDto> calendarEventDtoList = new ArrayList<>();
@@ -34,6 +100,17 @@ public class CalendarEventService {
         for(CalendarEvent calendarEvent: calendarEvents){
             calendarEventDtoList.add(new CalendarEventDto(calendarEvent));
         }
-        return  calendarEventDtoList;
+        return calendarEventDtoList;
+    }
+
+    public List<CalendarEventForUserDto> findAllForUser(){
+        List<CalendarEvent> calendarEvents = calendarEventRepository.findAll();
+
+        List<CalendarEventForUserDto> calendarEventForUserDto = new ArrayList<>();
+
+        for(CalendarEvent calendarEvent: calendarEvents){
+            calendarEventForUserDto.add(new CalendarEventForUserDto(calendarEvent));
+        }
+        return calendarEventForUserDto;
     }
 }

@@ -3,25 +3,25 @@ package com.paulrichter.tutoring.payload.response;
 import java.util.List;
 
 public class JwtResponse {
-    private String token;
+    private String accessToken;
     private String type = "Bearer";
     private Long id;
     private String username;
     private List<String> roles;
 
     public JwtResponse(String accessToken, Long id, String username, List<String> roles) {
-        this.token = accessToken;
+        this.accessToken = accessToken;
         this.id = id;
         this.username = username;
         this.roles = roles;
     }
 
     public String getAccessToken() {
-        return token;
+        return accessToken;
     }
 
     public void setAccessToken(String accessToken) {
-        this.token = accessToken;
+        this.accessToken = accessToken;
     }
 
     public String getTokenType() {

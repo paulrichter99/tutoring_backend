@@ -22,23 +22,23 @@ public class CalendarEvent {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "event_calendar_date")
-    private List<CalendarDate> calendarDates = new ArrayList<>();
+    private List<CalendarDate> eventDates = new ArrayList<>();
 
     public CalendarEvent() {
     }
 
-    public CalendarEvent(String eventName, Integer eventDuration, List<CalendarDate> calendarDates) {
+    public CalendarEvent(String eventName, Integer eventDuration, List<CalendarDate> eventDates) {
         this.eventName = eventName;
         this.eventDuration = eventDuration;
-        this.calendarDates = calendarDates;
+        this.eventDates = eventDates;
     }
 
-    public List<CalendarDate> getCalendarDates() {
-        return calendarDates;
+    public List<CalendarDate> getEventDates() {
+        return eventDates;
     }
 
-    public void setCalendarDates(List<CalendarDate> calendarDates) {
-        this.calendarDates = calendarDates;
+    public void setEventDates(List<CalendarDate> eventDates) {
+        this.eventDates = eventDates;
     }
 
     public Integer getEventDuration() {
