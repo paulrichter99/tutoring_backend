@@ -3,6 +3,7 @@ import com.paulrichter.tutoring.dto.CalendarEventDto;
 import com.paulrichter.tutoring.dto.CalendarEventForUserDto;
 import com.paulrichter.tutoring.model.CalendarEvent;
 import com.paulrichter.tutoring.service.CalendarEventService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,14 +26,18 @@ public class CalendarEventController {
 
     @PutMapping("/calendarEvent/{id}")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<CalendarEventDto> updateCalendarEventById(@RequestBody CalendarEvent calendarEvent){
-        return ResponseEntity.ok(calendarEventService.update(calendarEvent));
+    public ResponseEntity<?> updateCalendarEventById(@Valid @RequestBody CalendarEvent calendarEvent){
+        CalendarEventDto calendarEventDto = calendarEventService.update(calendarEvent);
+        if(calendarEventDto != null) return ResponseEntity.ok(calendarEventDto);
+        else return ResponseEntity.badRequest().body("DATA_INVALID or DATE_ALREADY_OCCUPIED");
     }
 
     @PostMapping("/calendarEvent")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<CalendarEventDto> updateCalendarEvent(@RequestBody CalendarEvent calendarEvent){
-        return ResponseEntity.ok(calendarEventService.save(calendarEvent));
+    public ResponseEntity<?> updateCalendarEvent(@Valid @RequestBody CalendarEvent calendarEvent){
+        CalendarEventDto calendarEventDto = calendarEventService.save(calendarEvent);
+        if(calendarEventDto != null) return ResponseEntity.ok(calendarEventDto);
+        else return ResponseEntity.badRequest().body("DATA_INVALID or DATE_ALREADY_OCCUPIED");
     }
 
     @GetMapping("/calendarEvent/all/admin")

@@ -1,6 +1,5 @@
 package com.paulrichter.tutoring.service;
 
-import com.paulrichter.tutoring.dto.CalendarDateDto;
 import com.paulrichter.tutoring.dto.CalendarEventDto;
 import com.paulrichter.tutoring.dto.CalendarEventForUserDto;
 import com.paulrichter.tutoring.model.CalendarDate;
@@ -9,6 +8,7 @@ import com.paulrichter.tutoring.model.User;
 import com.paulrichter.tutoring.repository.CalendarDateRepository;
 import com.paulrichter.tutoring.repository.CalendarEventRepository;
 import com.paulrichter.tutoring.repository.UserRepository;
+import com.paulrichter.tutoring.util.CalendarEventUtilService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,11 +20,16 @@ public class CalendarEventService {
     private final CalendarEventRepository calendarEventRepository;
     private final UserRepository userRepository;
     private final CalendarDateRepository calendarDateRepository;
+    private final CalendarEventUtilService calendarEventUtilService;
 
-    public CalendarEventService (CalendarEventRepository calendarEventRepository, UserRepository userRepository, CalendarDateRepository calendarDateRepository){
+    public CalendarEventService (CalendarEventRepository calendarEventRepository,
+                                 UserRepository userRepository,
+                                 CalendarDateRepository calendarDateRepository,
+                                 CalendarEventUtilService calendarEventUtilService){
         this.calendarEventRepository = calendarEventRepository;
         this.userRepository = userRepository;
         this.calendarDateRepository = calendarDateRepository;
+        this.calendarEventUtilService = calendarEventUtilService;
     }
 
     public CalendarEventDto findDtoById(long id){
@@ -37,10 +42,15 @@ public class CalendarEventService {
     }
 
     public CalendarEventDto update(CalendarEvent calendarEvent){
+        if(!calendarEventUtilService.validateDuration(calendarEvent)) return null;
         Optional<CalendarEvent> optionalCalendarEvent = calendarEventRepository.findById(calendarEvent.getId());
         if(optionalCalendarEvent.isEmpty()) return null;
 
         CalendarEvent persistedEvent = optionalCalendarEvent.get();
+
+        // check date compatibility of the event
+        if(!calendarEventUtilService.checkDateCompatibility(calendarEvent)) return null;
+
         persistedEvent.setEventName(calendarEvent.getEventName());
         persistedEvent.setEventDuration(calendarEvent.getEventDuration());
 
@@ -54,7 +64,7 @@ public class CalendarEventService {
         persistedEvent.setEventUsers(userFromCalendarEvent);
         // same as user
         List<CalendarDate> calendarDatesFromCalendarEvent = new ArrayList<>();
-        // make sure we get the correct persisted user
+        // make sure we get the correct persisted date
         for(CalendarDate eventDate: calendarEvent.getEventDates()){
             CalendarDate calendarDate = this.calendarDateRepository.findById(eventDate.getId()).orElse(null);
             if(calendarDate == null){ return null; }
@@ -71,6 +81,8 @@ public class CalendarEventService {
     }
 
     public CalendarEventDto save(CalendarEvent calendarEvent){
+        // check date compatibility of the event
+        if(!calendarEventUtilService.checkDateCompatibility(calendarEvent)) return null;
         // save the new CalendarEvent
         calendarEventRepository.save(calendarEvent);
 
