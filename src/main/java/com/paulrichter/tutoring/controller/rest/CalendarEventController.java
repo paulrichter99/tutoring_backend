@@ -1,6 +1,9 @@
 package com.paulrichter.tutoring.controller.rest;
 import com.paulrichter.tutoring.dto.CalendarEventDto;
+import com.paulrichter.tutoring.dto.CalendarEventForUserDto;
+import com.paulrichter.tutoring.model.CalendarEvent;
 import com.paulrichter.tutoring.service.CalendarEventService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,13 +20,36 @@ public class CalendarEventController {
 
     @GetMapping("/calendarEvent/{id}")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<CalendarEventDto> getCalendarEventById(@PathVariable long id) throws Exception {
-        return ResponseEntity.ok(calendarEventService.findById(id));
+    public ResponseEntity<CalendarEventDto> getCalendarEventById(@PathVariable long id){
+        return ResponseEntity.ok(calendarEventService.findDtoById(id));
     }
 
-    @GetMapping("/calendarEvent/all")
+    @PutMapping("/calendarEvent/{id}")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<List<CalendarEventDto>> getAllCalendarEvents() throws Exception {
-        return ResponseEntity.ok(calendarEventService.findAll());
+    public ResponseEntity<?> updateCalendarEventById(@Valid @RequestBody CalendarEvent calendarEvent){
+        CalendarEventDto calendarEventDto = calendarEventService.update(calendarEvent);
+        if(calendarEventDto != null) return ResponseEntity.ok(calendarEventDto);
+        else return ResponseEntity.badRequest().body("DATA_INVALID or DATE_ALREADY_OCCUPIED");
+    }
+
+    @PostMapping("/calendarEvent")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<?> updateCalendarEvent(@Valid @RequestBody CalendarEvent calendarEvent){
+        CalendarEventDto calendarEventDto = calendarEventService.save(calendarEvent);
+        if(calendarEventDto != null) return ResponseEntity.ok(calendarEventDto);
+        else return ResponseEntity.badRequest().body("DATA_INVALID or DATE_ALREADY_OCCUPIED");
+    }
+
+    @GetMapping("/calendarEvent/all/admin")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<CalendarEventDto>> getAllCalendarEvents(){
+        return ResponseEntity.ok(calendarEventService.findAllForAdmin());
+    }
+
+    @GetMapping("/calendarEvent/all/user")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<CalendarEventForUserDto>> getAllCalendarEventsForUser(){
+        // return Lust of CalendarEventForUserDto
+        return ResponseEntity.ok(calendarEventService.findAllForUser());
     }
 }

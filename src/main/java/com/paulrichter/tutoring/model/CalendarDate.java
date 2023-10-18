@@ -2,7 +2,7 @@ package com.paulrichter.tutoring.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "calendar_date")
@@ -13,7 +13,7 @@ public class CalendarDate {
     private Long id;
 
     @Column(name = "date_time")
-    private LocalDateTime dateTime;
+    private ZonedDateTime dateTime;
 
     @ManyToOne
     private CalendarEvent calendarEvent;
@@ -21,7 +21,7 @@ public class CalendarDate {
     public CalendarDate() {
     }
 
-    public CalendarDate(LocalDateTime dateTime) {
+    public CalendarDate(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -33,11 +33,11 @@ public class CalendarDate {
         this.calendarEvent = calendarEvent;
     }
 
-    public LocalDateTime getDateTime() {
+    public ZonedDateTime getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
+    public void setDateTime(ZonedDateTime dateTime) {
         this.dateTime = dateTime;
     }
 

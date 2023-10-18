@@ -1,6 +1,9 @@
 package com.paulrichter.tutoring.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 
 import java.util.*;
 
@@ -12,9 +15,12 @@ public class CalendarEvent {
     private Long id;
 
     @Column(name = "event_name", nullable = false)
+    @Size(min = 5, max = 40, message = "eventName should be at least 5 and maximum of 40 characters")
     private String eventName;
 
     @Column(name = "event_duration", nullable = false)
+    @Min(value = 60, message = "eventDuration should be between 60, 90 or 120")
+    @Max(value = 120, message = "eventDuration should be between 60, 90 or 120")
     private Integer eventDuration;
 
     @ManyToMany(mappedBy = "calendarEvents", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
@@ -22,23 +28,23 @@ public class CalendarEvent {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "event_calendar_date")
-    private List<CalendarDate> calendarDates = new ArrayList<>();
+    private List<CalendarDate> eventDates = new ArrayList<>();
 
     public CalendarEvent() {
     }
 
-    public CalendarEvent(String eventName, Integer eventDuration, List<CalendarDate> calendarDates) {
+    public CalendarEvent(String eventName, Integer eventDuration, List<CalendarDate> eventDates) {
         this.eventName = eventName;
         this.eventDuration = eventDuration;
-        this.calendarDates = calendarDates;
+        this.eventDates = eventDates;
     }
 
-    public List<CalendarDate> getCalendarDates() {
-        return calendarDates;
+    public List<CalendarDate> getEventDates() {
+        return eventDates;
     }
 
-    public void setCalendarDates(List<CalendarDate> calendarDates) {
-        this.calendarDates = calendarDates;
+    public void setEventDates(List<CalendarDate> eventDates) {
+        this.eventDates = eventDates;
     }
 
     public Integer getEventDuration() {

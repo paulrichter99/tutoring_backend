@@ -4,6 +4,7 @@ import com.paulrichter.tutoring.dto.user.UserDtoForEvent;
 import com.paulrichter.tutoring.model.CalendarDate;
 import com.paulrichter.tutoring.model.CalendarEvent;
 import com.paulrichter.tutoring.model.User;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,14 +13,14 @@ import java.util.Objects;
 
 public class CalendarEventDto implements Serializable {
 
-    private final Long eventId;
+    private final Long id;
     private final String eventName;
     private final Integer eventDuration;
     private final List<CalendarDateDto> eventDates;
     private final List<UserDtoForEvent> eventUsers;
 
-    public CalendarEventDto(Long eventId, String eventName, Integer eventDuration, List<CalendarDateDto> eventDates, List<UserDtoForEvent> eventUsers) {
-        this.eventId = eventId;
+    public CalendarEventDto(Long id, String eventName, Integer eventDuration, List<CalendarDateDto> eventDates, List<UserDtoForEvent> eventUsers) {
+        this.id = id;
         this.eventName = eventName;
         this.eventDuration = eventDuration;
         this.eventDates = eventDates;
@@ -27,13 +28,13 @@ public class CalendarEventDto implements Serializable {
     }
 
     public CalendarEventDto(CalendarEvent calendarEvent){
-        this.eventId = calendarEvent.getId();
+        this.id = calendarEvent.getId();
         this.eventName = calendarEvent.getEventName();
         this.eventDuration = calendarEvent.getEventDuration();
 
         List<CalendarDateDto> calendarDates = new ArrayList<>();
-        for(CalendarDate date: calendarEvent.getCalendarDates()){
-            calendarDates.add(new CalendarDateDto(date.getDateTime()));
+        for(CalendarDate date: calendarEvent.getEventDates()){
+            calendarDates.add(new CalendarDateDto(date.getId(), date.getDateTime()));
         }
         this.eventDates = calendarDates;
 
@@ -44,8 +45,8 @@ public class CalendarEventDto implements Serializable {
         this.eventUsers = eventUsers;
     }
 
-    public Long getEventId() {
-        return eventId;
+    public Long getId() {
+        return id;
     }
 
     public String getEventName() {
@@ -69,7 +70,7 @@ public class CalendarEventDto implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CalendarEventDto entity = (CalendarEventDto) o;
-        return  Objects.equals(this.eventId, entity.eventId) &&
+        return  Objects.equals(this.id, entity.id) &&
                 Objects.equals(this.eventName, entity.eventName) &&
                 Objects.equals(this.eventDuration, entity.eventDuration) &&
                 Objects.equals(this.eventDates, entity.eventDates) &&
@@ -78,13 +79,13 @@ public class CalendarEventDto implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(eventId, eventName, eventDuration, eventDates, eventUsers);
+        return Objects.hash(id, eventName, eventDuration, eventDates, eventUsers);
     }
 
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" +
-                "eventId = " + eventId + ", " +
+                "eventId = " + id + ", " +
                 "eventName = " + eventName + ", " +
                 "eventDuration = " + eventDuration + ", " +
                 "eventDate = " + eventDates + ", " +

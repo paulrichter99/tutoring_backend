@@ -1,5 +1,6 @@
 package com.paulrichter.tutoring.service;
 
+import com.paulrichter.tutoring.repository.RoleRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 

@@ -11,15 +11,12 @@ import com.paulrichter.tutoring.repository.CalendarDateRepository;
 import com.paulrichter.tutoring.repository.CalendarEventRepository;
 import com.paulrichter.tutoring.repository.RoleRepository;
 import com.paulrichter.tutoring.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.*;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,11 +55,11 @@ class TutoringApplicationTests {
 	@Test
 	public void testCreateUsersAndEvents() {
 		// create some calendarDates
-		LocalDateTime localDateTime1 = LocalDateTime.of(2023, Month.OCTOBER, 31, 10, 0);
-		LocalDateTime localDateTime2 = LocalDateTime.of(2023, Month.OCTOBER, 10, 15, 0);
-		LocalDateTime localDateTime3 = LocalDateTime.of(2023, Month.DECEMBER, 24, 18, 0);
-		LocalDateTime localDateTime4 = LocalDateTime.of(2024, Month.OCTOBER, 15, 12, 30);
-		LocalDateTime localDateTime5 = LocalDateTime.of(2023, Month.OCTOBER, 17, 14, 30);
+		ZonedDateTime localDateTime1 = ZonedDateTime.of(LocalDateTime.of(2023, Month.OCTOBER, 31, 10, 0), ZoneId.of("Europe/Berlin"));
+		ZonedDateTime localDateTime2 = ZonedDateTime.of(LocalDateTime.of(2023, Month.OCTOBER, 10, 15, 0), ZoneId.of("Europe/Berlin"));
+		ZonedDateTime localDateTime3 = ZonedDateTime.of(LocalDateTime.of(2023, Month.DECEMBER, 24, 18, 0), ZoneId.of("Europe/Berlin"));
+		ZonedDateTime localDateTime4 = ZonedDateTime.of(LocalDateTime.of(2024, Month.OCTOBER, 15, 12, 30), ZoneId.of("Europe/Berlin"));
+		ZonedDateTime localDateTime5 = ZonedDateTime.of(LocalDateTime.of(2023, Month.OCTOBER, 17, 14, 30), ZoneId.of("Europe/Berlin"));
 
 		CalendarDate calendarDate1 = calendarDateRepository.findById(1L).orElseGet(() -> new CalendarDate(localDateTime1));
 		CalendarDate calendarDate2 = calendarDateRepository.findById(2L).orElseGet(() -> new CalendarDate(localDateTime2));
@@ -134,7 +131,7 @@ class TutoringApplicationTests {
 		eventRepository.save(event3);
 		eventRepository.save(event4);
 		// eventRepository.saveAll(Arrays.asList(event1, event2, event3));
-		/*
+
 		calendarDateRepository.save(calendarDate1);
 		calendarDateRepository.save(calendarDate2);
 		calendarDateRepository.save(calendarDate3);
@@ -145,7 +142,7 @@ class TutoringApplicationTests {
 		userRepository.save(persistedUser2);
 		userRepository.save(persistedUser3);
 		userRepository.save(persistedUser4);
-		*/
+
 		// userRepository.saveAll(Arrays.asList(user1, user2, user3));
 
 		assertEquals(2, persistedUser1.getCalendarEvents().size());

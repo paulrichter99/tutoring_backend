@@ -2,7 +2,9 @@ package com.paulrichter.tutoring.controller.rest;
 
 import com.paulrichter.tutoring.Enum.ERole;
 import com.paulrichter.tutoring.config.security.jwt.JwtUtils;
+import com.paulrichter.tutoring.dto.CalendarEventDto;
 import com.paulrichter.tutoring.dto.user.UserDto;
+import com.paulrichter.tutoring.model.CalendarEvent;
 import com.paulrichter.tutoring.model.Role;
 import com.paulrichter.tutoring.model.User;
 import com.paulrichter.tutoring.payload.request.LoginRequest;
@@ -23,6 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -126,7 +129,9 @@ public class UserController {
     public ResponseEntity<UserDto> getUserDataFromLoggedInUser(){
         User user = this.userService.findByUsername(securityService.findLoggedInUsername()).orElse(null);
         if(user == null) return ResponseEntity.ok(null);
+
         UserDto userDto = new UserDto(user.getUsername(), user.getCalendarEvents());
+
         return ResponseEntity.ok(userDto);
     }
 }
