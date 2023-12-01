@@ -9,6 +9,7 @@ import com.paulrichter.tutoring.repository.CalendarDateRepository;
 import com.paulrichter.tutoring.repository.CalendarEventRepository;
 import com.paulrichter.tutoring.repository.UserRepository;
 import com.paulrichter.tutoring.util.CalendarEventUtilService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,6 +22,9 @@ public class CalendarEventService {
     private final UserRepository userRepository;
     private final CalendarDateRepository calendarDateRepository;
     private final CalendarEventUtilService calendarEventUtilService;
+
+    @Value("${tutoring.app.mainUserName}")
+    private String mainUserName;
 
     public CalendarEventService (CalendarEventRepository calendarEventRepository,
                                  UserRepository userRepository,
@@ -80,7 +84,10 @@ public class CalendarEventService {
         return new CalendarEventDto(persistedEvent);
     }
 
-    public CalendarEventDto save(CalendarEvent calendarEvent){
+    public CalendarEventDto save(CalendarEvent calendarEvent, boolean isPrivate){
+        if(!isPrivate && !(calendarEvent.getEventUsers().contains((userRepository.findMainTutor(mainUserName))))){
+            calendarEvent.getEventUsers().add(userRepository.findMainTutor(mainUserName));
+        }
         // check date compatibility of the event
         if(!calendarEventUtilService.checkDateCompatibility(calendarEvent)) return null;
         // save the new CalendarEvent
@@ -115,8 +122,10 @@ public class CalendarEventService {
         return calendarEventDtoList;
     }
 
-    public List<CalendarEventForUserDto> findAllForUser(){
-        List<CalendarEvent> calendarEvents = calendarEventRepository.findAll();
+    public List<CalendarEventForUserDto> findAllFromMainTutor(){
+        User mainUser  = userRepository.findMainTutor(mainUserName);
+
+        List<CalendarEvent> calendarEvents = mainUser.getCalendarEvents();
 
         List<CalendarEventForUserDto> calendarEventForUserDto = new ArrayList<>();
 

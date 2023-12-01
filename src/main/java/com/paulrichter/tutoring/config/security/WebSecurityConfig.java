@@ -70,6 +70,7 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/user/login", "/api/calendarEvent/all/user").permitAll()
+                                .requestMatchers("/api/user/allUsernames").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
                                 .anyRequest().authenticated()
                 )

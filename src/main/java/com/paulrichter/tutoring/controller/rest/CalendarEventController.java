@@ -4,6 +4,7 @@ import com.paulrichter.tutoring.dto.CalendarEventForUserDto;
 import com.paulrichter.tutoring.model.CalendarEvent;
 import com.paulrichter.tutoring.service.CalendarEventService;
 import jakarta.validation.Valid;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,8 +35,9 @@ public class CalendarEventController {
 
     @PostMapping("/calendarEvent")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<?> updateCalendarEvent(@Valid @RequestBody CalendarEvent calendarEvent){
-        CalendarEventDto calendarEventDto = calendarEventService.save(calendarEvent);
+    public ResponseEntity<?> updateCalendarEvent(@Valid @RequestBody CalendarEvent calendarEvent,
+                                                 @RequestParam(required = false) boolean isPrivate){
+        CalendarEventDto calendarEventDto = calendarEventService.save(calendarEvent, isPrivate);
         if(calendarEventDto != null) return ResponseEntity.ok(calendarEventDto);
         else return ResponseEntity.badRequest().body("DATA_INVALID or DATE_ALREADY_OCCUPIED");
     }
@@ -49,7 +51,10 @@ public class CalendarEventController {
     @GetMapping("/calendarEvent/all/user")
     @CrossOrigin(origins = "*")
     public ResponseEntity<List<CalendarEventForUserDto>> getAllCalendarEventsForUser(){
-        // return Lust of CalendarEventForUserDto
-        return ResponseEntity.ok(calendarEventService.findAllForUser());
+        // return List of CalendarEventForUserDto
+        // TODO: we should change this to return the Events from the specific tutor or
+        //  multiple tutors - for now this solution is probably fine, since the declared
+        //  username is the only tutor
+        return ResponseEntity.ok(calendarEventService.findAllFromMainTutor());
     }
 }
