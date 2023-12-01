@@ -3,6 +3,7 @@ package com.paulrichter.tutoring.util;
 import com.paulrichter.tutoring.dto.CalendarEventDto;
 import com.paulrichter.tutoring.model.CalendarDate;
 import com.paulrichter.tutoring.model.CalendarEvent;
+import com.paulrichter.tutoring.model.User;
 import com.paulrichter.tutoring.repository.CalendarDateRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +30,23 @@ public class CalendarEventUtilService {
             for(int i = -3; i < eventDurationSteps; i++) {
                 checkDate = calendarDate.getDateTime().plusSeconds((long) i * 60 * 30);
                 CalendarDate calendarDateToCheck = calendarDateRepository.findByDateTime(checkDate).orElse(null);
+                if(calendarDateToCheck == null) continue;
+
+                boolean checkValidity = false;
+                for(User user: calendarDateToCheck.getCalendarEvent().getEventUsers()){
+                    for(User checkUser: calendarEvent.getEventUsers()){
+                        if(user.getUsername().equals(checkUser.getUsername())){
+                            checkValidity = true;
+                            break;
+                        }
+                        if(checkValidity){
+                            break;
+                        }
+                    }
+                }
+
                 // we are fine if the new and old event have the same id
-                if (calendarDateToCheck != null && (!(Objects.equals(calendarDateToCheck.getCalendarEvent().getId(), calendarEvent.getId())))) {
+                if ((!(Objects.equals(calendarDateToCheck.getCalendarEvent().getId(), calendarEvent.getId()))) && checkValidity) {
                     //date already exists
                     if(i < 0){
                         // checking backwards

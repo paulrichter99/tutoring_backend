@@ -134,4 +134,10 @@ public class UserController {
 
         return ResponseEntity.ok(userDto);
     }
+
+    @GetMapping("/allUsernames")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<String>> getAllUsernames(){
+        return ResponseEntity.ok(this.userService.findAllUsernames());
+    }
 }
