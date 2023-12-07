@@ -1,11 +1,9 @@
 package com.paulrichter.tutoring.model;
 
+import com.paulrichter.tutoring.dto.CalendarEventDto;
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "user")
@@ -76,5 +74,13 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User entity = (User) o;
+        return  Objects.equals(this.getUsername(), entity.getUsername());
     }
 }

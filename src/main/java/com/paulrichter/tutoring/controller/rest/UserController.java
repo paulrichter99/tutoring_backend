@@ -36,25 +36,25 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final TutoringUserService userService;
+    private final TutoringSecurityServiceImpl securityService;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder encoder;
     private final RoleRepository roleRepository;
-    private final TutoringSecurityServiceImpl securityService;
 
 
     public UserController(TutoringUserService userService,
+                          TutoringSecurityServiceImpl securityService,
                           JwtUtils jwtUtils,
                           AuthenticationManager authenticationManager,
                           PasswordEncoder encoder,
-                          RoleRepository roleRepository,
-                          TutoringSecurityServiceImpl securityService) {
+                          RoleRepository roleRepository) {
         this.userService = userService;
+        this.securityService = securityService;
         this.jwtUtils = jwtUtils;
         this.authenticationManager = authenticationManager;
         this.encoder = encoder;
         this.roleRepository = roleRepository;
-        this.securityService = securityService;
     }
 
     @PostMapping("/login")
