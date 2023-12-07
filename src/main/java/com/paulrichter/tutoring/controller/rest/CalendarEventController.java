@@ -2,9 +2,11 @@ package com.paulrichter.tutoring.controller.rest;
 import com.paulrichter.tutoring.dto.CalendarEventDto;
 import com.paulrichter.tutoring.dto.CalendarEventForUserDto;
 import com.paulrichter.tutoring.model.CalendarEvent;
+import com.paulrichter.tutoring.model.User;
 import com.paulrichter.tutoring.service.CalendarEventService;
+import com.paulrichter.tutoring.service.TutoringSecurityServiceImpl;
+import com.paulrichter.tutoring.service.TutoringUserService;
 import jakarta.validation.Valid;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +16,15 @@ import java.util.List;
 @RequestMapping("/api")
 public class CalendarEventController {
     private final CalendarEventService calendarEventService;
+    private final TutoringUserService userService;
+    private final TutoringSecurityServiceImpl securityService;
 
-    public CalendarEventController (CalendarEventService calendarEventService) {
+    public CalendarEventController (CalendarEventService calendarEventService,
+                                    TutoringUserService userService,
+                                    TutoringSecurityServiceImpl securityService) {
         this.calendarEventService = calendarEventService;
+        this.userService = userService;
+        this.securityService = securityService;
     }
 
     @GetMapping("/calendarEvent/{id}")
@@ -56,5 +64,18 @@ public class CalendarEventController {
         //  multiple tutors - for now this solution is probably fine, since the declared
         //  username is the only tutor
         return ResponseEntity.ok(calendarEventService.findAllFromMainTutor());
+    }
+
+    @GetMapping("/calendarEvent/all")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<CalendarEventDto>> getCalendarEventsByDateRange(
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate
+    ){
+        User user = this.userService.findByUsername(securityService.findLoggedInUsername()).orElse(null);
+        if(user == null) return ResponseEntity.ok(null);
+
+        // return List of Events for DateRange
+        return ResponseEntity.ok(calendarEventService.findEventsByUsernameAndDateRange(user.getUsername(), startDate, endDate));
     }
 }

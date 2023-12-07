@@ -26,25 +26,25 @@ public class CalendarEvent {
     @ManyToMany(mappedBy = "calendarEvents", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     private List<User> eventUsers = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "event_calendar_date")
-    private List<CalendarDate> eventDates = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "eventDate")
+    private CalendarDate eventDate;
 
     public CalendarEvent() {
     }
 
-    public CalendarEvent(String eventName, Integer eventDuration, List<CalendarDate> eventDates) {
+    public CalendarEvent(String eventName, Integer eventDuration, CalendarDate eventDate) {
         this.eventName = eventName;
         this.eventDuration = eventDuration;
-        this.eventDates = eventDates;
+        this.eventDate = eventDate;
     }
 
-    public List<CalendarDate> getEventDates() {
-        return eventDates;
+    public CalendarDate getEventDate() {
+        return eventDate;
     }
 
-    public void setEventDates(List<CalendarDate> eventDates) {
-        this.eventDates = eventDates;
+    public void setEventDate(CalendarDate eventDates) {
+        this.eventDate = eventDates;
     }
 
     public Integer getEventDuration() {

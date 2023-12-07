@@ -1,10 +1,8 @@
 package com.paulrichter.tutoring.dto;
 
 import com.paulrichter.tutoring.dto.user.UserDtoForEvent;
-import com.paulrichter.tutoring.model.CalendarDate;
 import com.paulrichter.tutoring.model.CalendarEvent;
 import com.paulrichter.tutoring.model.User;
-import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,14 +14,14 @@ public class CalendarEventDto implements Serializable {
     private final Long id;
     private final String eventName;
     private final Integer eventDuration;
-    private final List<CalendarDateDto> eventDates;
+    private final CalendarDateDto eventDate;
     private final List<UserDtoForEvent> eventUsers;
 
-    public CalendarEventDto(Long id, String eventName, Integer eventDuration, List<CalendarDateDto> eventDates, List<UserDtoForEvent> eventUsers) {
+    public CalendarEventDto(Long id, String eventName, Integer eventDuration, CalendarDateDto eventDate, List<UserDtoForEvent> eventUsers) {
         this.id = id;
         this.eventName = eventName;
         this.eventDuration = eventDuration;
-        this.eventDates = eventDates;
+        this.eventDate = eventDate;
         this.eventUsers = eventUsers;
     }
 
@@ -32,11 +30,7 @@ public class CalendarEventDto implements Serializable {
         this.eventName = calendarEvent.getEventName();
         this.eventDuration = calendarEvent.getEventDuration();
 
-        List<CalendarDateDto> calendarDates = new ArrayList<>();
-        for(CalendarDate date: calendarEvent.getEventDates()){
-            calendarDates.add(new CalendarDateDto(date.getId(), date.getDateTime()));
-        }
-        this.eventDates = calendarDates;
+        this.eventDate = new CalendarDateDto(calendarEvent.getEventDate().getId(), calendarEvent.getEventDate().getDateTime());
 
         List<UserDtoForEvent> eventUsers = new ArrayList<>();
         for(User user: calendarEvent.getEventUsers()){
@@ -57,8 +51,8 @@ public class CalendarEventDto implements Serializable {
         return eventDuration;
     }
 
-    public List<CalendarDateDto> getEventDates() {
-        return eventDates;
+    public CalendarDateDto getEventDate() {
+        return eventDate;
     }
 
     public List<UserDtoForEvent> getEventUsers() {
@@ -73,13 +67,13 @@ public class CalendarEventDto implements Serializable {
         return  Objects.equals(this.id, entity.id) &&
                 Objects.equals(this.eventName, entity.eventName) &&
                 Objects.equals(this.eventDuration, entity.eventDuration) &&
-                Objects.equals(this.eventDates, entity.eventDates) &&
+                Objects.equals(this.eventDate, entity.eventDate) &&
                 Objects.equals(this.eventUsers, entity.eventUsers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, eventName, eventDuration, eventDates, eventUsers);
+        return Objects.hash(id, eventName, eventDuration, eventDate, eventUsers);
     }
 
     @Override
@@ -88,7 +82,7 @@ public class CalendarEventDto implements Serializable {
                 "eventId = " + id + ", " +
                 "eventName = " + eventName + ", " +
                 "eventDuration = " + eventDuration + ", " +
-                "eventDate = " + eventDates + ", " +
+                "eventDate = " + eventDate + ", " +
                 "eventUsers = " + eventUsers + ")";
     }
 }

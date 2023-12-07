@@ -5,29 +5,24 @@ import com.paulrichter.tutoring.model.CalendarEvent;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class CalendarEventForUserDto implements Serializable {
     private final Long id;
     private final Integer eventDuration;
-    private final List<CalendarDateDto> eventDates;
+    private final CalendarDateDto eventDate;
 
-    public CalendarEventForUserDto(Long id, Integer eventDuration, List<CalendarDateDto> eventDates) {
+    public CalendarEventForUserDto(Long id, Integer eventDuration, CalendarDateDto eventDate) {
         this.id = id;
         this.eventDuration = eventDuration;
-        this.eventDates = eventDates;
+        this.eventDate = eventDate;
     }
 
     public CalendarEventForUserDto(CalendarEvent calendarEvent) {
         this.id = calendarEvent.getId();
         this.eventDuration = calendarEvent.getEventDuration();
 
-        List<CalendarDateDto> calendarDates = new ArrayList<>();
-        for(CalendarDate date: calendarEvent.getEventDates()){
-            calendarDates.add(new CalendarDateDto(date.getId(), date.getDateTime()));
-        }
-        this.eventDates = calendarDates;
+        this.eventDate = new CalendarDateDto(calendarEvent.getEventDate().getId(), calendarEvent.getEventDate().getDateTime());
     }
 
     public Long getId() {
@@ -38,8 +33,8 @@ public class CalendarEventForUserDto implements Serializable {
         return eventDuration;
     }
 
-    public List<CalendarDateDto> getEventDates() {
-        return eventDates;
+    public CalendarDateDto getEventDate() {
+        return eventDate;
     }
 
     @Override
@@ -49,12 +44,12 @@ public class CalendarEventForUserDto implements Serializable {
         CalendarEventForUserDto entity = (CalendarEventForUserDto) o;
         return Objects.equals(this.id, entity.id) &&
                 Objects.equals(this.eventDuration, entity.eventDuration) &&
-                Objects.equals(this.eventDates, entity.eventDates);
+                Objects.equals(this.eventDate, entity.eventDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, eventDuration, eventDates);
+        return Objects.hash(id, eventDuration, eventDate);
     }
 
     @Override
@@ -62,6 +57,6 @@ public class CalendarEventForUserDto implements Serializable {
         return getClass().getSimpleName() + "(" +
                 "id = " + id + ", " +
                 "eventDuration = " + eventDuration + ", " +
-                "eventDates = " + eventDates + ")";
+                "eventDate = " + eventDate + ")";
     }
 }

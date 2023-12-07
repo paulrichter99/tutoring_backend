@@ -66,19 +66,15 @@ public class CalendarEventService {
             this.userRepository.findByUsername(eventUser.getUsername()).ifPresent(userFromCalendarEvent::add);
         }
         persistedEvent.setEventUsers(userFromCalendarEvent);
-        // same as user
-        List<CalendarDate> calendarDatesFromCalendarEvent = new ArrayList<>();
+
         // make sure we get the correct persisted date
-        for(CalendarDate eventDate: calendarEvent.getEventDates()){
-            CalendarDate calendarDate = this.calendarDateRepository.findById(eventDate.getId()).orElse(null);
-            if(calendarDate == null){ return null; }
+        CalendarDate calendarDate = this.calendarDateRepository.findById(calendarEvent.getEventDate().getId()).orElse(null);
+        if(calendarDate == null){ return null; }
 
-            calendarDate.setDateTime(eventDate.getDateTime());
-            calendarDateRepository.save(calendarDate);
-            calendarDatesFromCalendarEvent.add(calendarDate);
+        calendarDate.setDateTime(calendarEvent.getEventDate().getDateTime());
+        calendarDateRepository.save(calendarDate);
 
-        }
-        persistedEvent.setEventDates(calendarDatesFromCalendarEvent);
+        persistedEvent.setEventDate(calendarDate);
         calendarEventRepository.save(persistedEvent);
 
         return new CalendarEventDto(persistedEvent);
@@ -98,15 +94,14 @@ public class CalendarEventService {
             this.userRepository.findByUsername(eventUser.getUsername()).ifPresent(user -> {user.getCalendarEvents().add(calendarEvent);});
         }
 
-        for(CalendarDate eventDate: calendarEvent.getEventDates()){
-            CalendarDate calendarDate = this.calendarDateRepository.findById(eventDate.getId()).orElse(null);
-            if(calendarDate == null){ return null; }
+        CalendarDate calendarDate = this.calendarDateRepository.findById(calendarEvent.getEventDate().getId()).orElse(null);
+        if(calendarDate == null){ return null; }
 
-            calendarDate.setDateTime(eventDate.getDateTime());
-            calendarDate.setCalendarEvent(calendarEvent);
+        calendarDate.setDateTime(calendarEvent.getEventDate().getDateTime());
+        calendarDate.setCalendarEvent(calendarEvent);
 
-            calendarDateRepository.save(calendarDate);
-        }
+        calendarDateRepository.save(calendarDate);
+
         return new CalendarEventDto(calendarEvent);
     }
 
@@ -133,5 +128,18 @@ public class CalendarEventService {
             calendarEventForUserDto.add(new CalendarEventForUserDto(calendarEvent));
         }
         return calendarEventForUserDto;
+    }
+
+    public List<CalendarEventDto> findEventsByUsernameAndDateRange(String username, String startDate, String endDate){
+        // we need to add this, so we actually find all dates that are on the same day
+        startDate += "T00:00Z";
+        endDate += "T23:59Z";
+        List<CalendarEvent> calendarEvents = calendarEventRepository.findEventsByUsernameAndDateRange(username, startDate, endDate);
+
+        List<CalendarEventDto> calendarEventDtos = new ArrayList<>();
+        for(CalendarEvent calendarEvent: calendarEvents){
+            calendarEventDtos.add(new CalendarEventDto(calendarEvent));
+        }
+        return calendarEventDtos;
     }
 }

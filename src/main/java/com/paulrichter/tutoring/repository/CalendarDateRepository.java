@@ -15,5 +15,5 @@ import java.util.Optional;
 public interface CalendarDateRepository extends JpaRepository<CalendarDate, Long> {
     Optional<CalendarDate> findById(Long id);
 
-    Optional<CalendarDate> findByDateTime(ZonedDateTime dateTime);
+    Optional<List<CalendarDate>> findByDateTime(ZonedDateTime dateTime);
 }
