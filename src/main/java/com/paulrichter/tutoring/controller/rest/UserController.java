@@ -2,9 +2,8 @@ package com.paulrichter.tutoring.controller.rest;
 
 import com.paulrichter.tutoring.Enum.ERole;
 import com.paulrichter.tutoring.config.security.jwt.JwtUtils;
-import com.paulrichter.tutoring.dto.CalendarEventDto;
 import com.paulrichter.tutoring.dto.user.UserDto;
-import com.paulrichter.tutoring.model.CalendarEvent;
+import com.paulrichter.tutoring.dto.user.UserSettingsDto;
 import com.paulrichter.tutoring.model.Role;
 import com.paulrichter.tutoring.model.User;
 import com.paulrichter.tutoring.payload.request.LoginRequest;
@@ -12,6 +11,7 @@ import com.paulrichter.tutoring.payload.request.SignupRequest;
 import com.paulrichter.tutoring.payload.response.JwtResponse;
 import com.paulrichter.tutoring.payload.response.MessageResponse;
 import com.paulrichter.tutoring.repository.RoleRepository;
+import com.paulrichter.tutoring.service.StorageService;
 import com.paulrichter.tutoring.service.TutoringSecurityServiceImpl;
 import com.paulrichter.tutoring.service.TutoringUserDetailsImpl;
 import com.paulrichter.tutoring.service.TutoringUserService;
@@ -24,8 +24,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -42,19 +42,22 @@ public class UserController {
     private final PasswordEncoder encoder;
     private final RoleRepository roleRepository;
 
+    private final StorageService storageService;
+
 
     public UserController(TutoringUserService userService,
                           TutoringSecurityServiceImpl securityService,
                           JwtUtils jwtUtils,
                           AuthenticationManager authenticationManager,
                           PasswordEncoder encoder,
-                          RoleRepository roleRepository) {
+                          RoleRepository roleRepository, StorageService storageService) {
         this.userService = userService;
         this.securityService = securityService;
         this.jwtUtils = jwtUtils;
         this.authenticationManager = authenticationManager;
         this.encoder = encoder;
         this.roleRepository = roleRepository;
+        this.storageService = storageService;
     }
 
     @PostMapping("/login")
@@ -130,7 +133,8 @@ public class UserController {
         User user = this.userService.findByUsername(securityService.findLoggedInUsername()).orElse(null);
         if(user == null) return ResponseEntity.ok(null);
 
-        UserDto userDto = new UserDto(user.getUsername(), user.getCalendarEvents());
+        // all except password and CalendarEvents -> CalendarEventDtos
+        UserDto userDto = new UserDto(user);
 
         return ResponseEntity.ok(userDto);
     }
@@ -139,5 +143,32 @@ public class UserController {
     @CrossOrigin(origins = "*")
     public ResponseEntity<List<String>> getAllUsernames(){
         return ResponseEntity.ok(this.userService.findAllUsernames());
+    }
+
+    @PutMapping("/settings")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<UserDto> changeUserSettings(@RequestBody UserSettingsDto userSettingsDto){
+        User user = this.userService.findByUsername(securityService.findLoggedInUsername()).orElse(null);
+        if(user == null) return ResponseEntity.badRequest().build();
+
+        return this.userService.saveUserInformation(user, userSettingsDto);
+    }
+
+    @PostMapping(value = "/profilePicture")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<UserDto> changeUserSettings(@RequestParam("file") MultipartFile file){
+        User user = this.userService.findByUsername(securityService.findLoggedInUsername()).orElse(null);
+        if(user == null) return ResponseEntity.badRequest().build();
+
+        try {
+            storageService.delete(user.getUsername() + ".png");
+
+            storageService.save(file, user.getUsername());
+
+            return ResponseEntity.ok(new UserDto(user));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return ResponseEntity.badRequest().body(new UserDto(user));
+        }
     }
 }
