@@ -69,9 +69,9 @@ public class WebSecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/user/login", "/api/calendarEvent/all/user").permitAll()
+                        auth.requestMatchers("/api/user/login", "/api/calendarEvent/all/user", "/uploads/**").permitAll()
                                 .requestMatchers("/api/user/allUsernames").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.OPTIONS, "/api/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/api/**", "/uploads/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .cors(AbstractHttpConfigurer::disable);
