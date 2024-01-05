@@ -3,6 +3,7 @@ package com.paulrichter.tutoring.controller.rest;
 import com.paulrichter.tutoring.Enum.ERole;
 import com.paulrichter.tutoring.config.security.jwt.JwtUtils;
 import com.paulrichter.tutoring.dto.user.UserDto;
+import com.paulrichter.tutoring.dto.user.UserDtoForEvent;
 import com.paulrichter.tutoring.dto.user.UserSettingsDto;
 import com.paulrichter.tutoring.model.Role;
 import com.paulrichter.tutoring.model.User;
@@ -137,6 +138,15 @@ public class UserController {
         UserDto userDto = new UserDto(user);
 
         return ResponseEntity.ok(userDto);
+    }
+
+    @GetMapping("/allForEvent")
+    @CrossOrigin(origins = "*")
+    public ResponseEntity<List<UserDtoForEvent>> getAllUserForEvent(){
+        User user = this.userService.findByUsername(securityService.findLoggedInUsername()).orElse(null);
+        if(user == null) return ResponseEntity.badRequest().build();
+
+        return ResponseEntity.ok(this.userService.findAllForEventDto(user));
     }
 
     @GetMapping("/allUsernames")

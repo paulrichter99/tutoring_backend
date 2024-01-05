@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -68,15 +69,15 @@ public class WebSecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/user/login", "/api/calendarEvent/all/user", "/uploads/**").permitAll()
-                                .requestMatchers("/api/user/allUsernames").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.OPTIONS, "/api/**", "/uploads/**").permitAll()
-                                .anyRequest().authenticated()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/api/**", "/uploads/**").permitAll()
+                        .requestMatchers("/api/user/login", "/api/calendarEvent/all/user", "/uploads/**").permitAll()
+                        .requestMatchers("/api/user/all").hasRole("ADMIN")
+                        .requestMatchers("/api/user/allUsernames").hasAnyRole("ADMIN", "TUTOR")
+                        .anyRequest().authenticated()
                 )
                 .cors(AbstractHttpConfigurer::disable);
         ;
-
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 

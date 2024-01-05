@@ -23,7 +23,8 @@ public class CalendarEvent {
     @Max(value = 120, message = "eventDuration should be between 60, 90 or 120")
     private Integer eventDuration;
 
-    @ManyToMany(mappedBy = "calendarEvents", fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_calendar_event")
     private List<User> eventUsers = new ArrayList<>();
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -77,5 +78,15 @@ public class CalendarEvent {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "eventName = " + eventName + ", " +
+                "eventDuration = " + eventDuration + ", " +
+                "eventUsers = " + eventUsers.toString() + ", " +
+                "eventDate = " + eventDate + ")";
     }
 }

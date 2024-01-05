@@ -43,7 +43,7 @@ public class CalendarEventController {
 
     @PostMapping("/calendarEvent")
     @CrossOrigin(origins = "*")
-    public ResponseEntity<?> updateCalendarEvent(@Valid @RequestBody CalendarEvent calendarEvent,
+    public ResponseEntity<?> saveCalendarEvent(@Valid @RequestBody CalendarEvent calendarEvent,
                                                  @RequestParam(required = false) boolean isPrivate){
         CalendarEventDto calendarEventDto = calendarEventService.save(calendarEvent, isPrivate);
         if(calendarEventDto != null) return ResponseEntity.ok(calendarEventDto);

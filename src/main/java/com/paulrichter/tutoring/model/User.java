@@ -31,8 +31,7 @@ public class User {
     private Integer grade;
     private String school;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_calendar_event")
+    @ManyToMany(mappedBy = "eventUsers", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<CalendarEvent> calendarEvents = new ArrayList<>();
 
     @ManyToMany

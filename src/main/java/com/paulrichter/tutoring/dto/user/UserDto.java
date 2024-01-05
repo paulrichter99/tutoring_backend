@@ -1,7 +1,9 @@
 package com.paulrichter.tutoring.dto.user;
 
+import com.paulrichter.tutoring.Enum.ERole;
 import com.paulrichter.tutoring.dto.CalendarEventDto;
 import com.paulrichter.tutoring.model.CalendarEvent;
+import com.paulrichter.tutoring.model.Role;
 import com.paulrichter.tutoring.model.User;
 
 import java.io.Serializable;
@@ -24,6 +26,8 @@ public class UserDto implements Serializable {
 
     private Integer grade;
     private String school;
+
+    private Boolean isTutor = false;
 
     public UserDto(String username, List<CalendarEvent> calendarEvents) {
         this.username = username;
@@ -54,6 +58,10 @@ public class UserDto implements Serializable {
 
         this.grade = user.getGrade();
         this.school = user.getSchool();
+
+        if(user.getRoles().contains(new Role(ERole.ROLE_TUTOR))){
+            this.isTutor = true;
+        }
     }
 
     public String getUsername() {
@@ -96,6 +104,10 @@ public class UserDto implements Serializable {
         return school;
     }
 
+    public Boolean getIsTutor() {
+        return isTutor;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,7 +127,7 @@ public class UserDto implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(username, calendarEvents, firstName, lastName, address, birthday, email, phoneNumber, grade, school);
+        return Objects.hash(username, calendarEvents, firstName, lastName, address, birthday, email, phoneNumber, grade, school, isTutor);
     }
 
     @Override
@@ -131,6 +143,7 @@ public class UserDto implements Serializable {
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", grade=" + grade +
                 ", school='" + school + '\'' +
+                ", isTutor='" + isTutor + '\'' +
                 '}';
     }
 }

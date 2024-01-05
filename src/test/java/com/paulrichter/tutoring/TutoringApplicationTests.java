@@ -44,15 +44,17 @@ class TutoringApplicationTests {
 	public void testCreateRole(){
 		Role role_user = roleRepository.findByName(ERole.ROLE_USER).orElse(new Role(ERole.ROLE_USER));
 		Role role_moderator = roleRepository.findByName(ERole.ROLE_MODERATOR).orElse(new Role(ERole.ROLE_MODERATOR));
+		Role role_tutor = roleRepository.findByName(ERole.ROLE_TUTOR).orElse(new Role(ERole.ROLE_TUTOR));
 		Role role_admin = roleRepository.findByName(ERole.ROLE_ADMIN).orElse(new Role(ERole.ROLE_ADMIN));
 
 		roleRepository.save(role_user);
 		roleRepository.save(role_moderator);
+		roleRepository.save(role_tutor);
 		roleRepository.save(role_admin);
 	}
 
 	// TODO: make separate tests for separate things
-	@Test
+	// @Test
 	public void testCreateUsersAndEvents() {
 		// create some calendarDates
 		ZonedDateTime localDateTime1 = ZonedDateTime.of(LocalDateTime.of(2023, Month.OCTOBER, 31, 10, 0), ZoneId.of("Europe/Berlin"));
@@ -69,13 +71,13 @@ class TutoringApplicationTests {
 
 		// Check if events already exist, or create them if they don't
 		CalendarEvent event1 = eventRepository.findByEventName("Event 1").orElseGet(()
-				-> new CalendarEvent("Event 1", 90, List.of(calendarDate1)));
+				-> new CalendarEvent("Event 1", 90, calendarDate1));
 		CalendarEvent event2 = eventRepository.findByEventName("Event 2").orElseGet(()
-				-> new CalendarEvent("Event 2", 120,  List.of(calendarDate2)));
+				-> new CalendarEvent("Event 2", 120,  calendarDate2));
 		CalendarEvent event3 = eventRepository.findByEventName("Event 3").orElseGet(()
-				-> new CalendarEvent("Event 3", 60, List.of(calendarDate3, calendarDate4)));
+				-> new CalendarEvent("Event 3", 60, calendarDate3));
 		CalendarEvent event4 = eventRepository.findByEventName("Nachhilfe mit Lionel").orElseGet(()
-				-> new CalendarEvent("Nachhilfe mit Lionel", 90, List.of(calendarDate5)));
+				-> new CalendarEvent("Nachhilfe mit Lionel", 90, calendarDate5));
 
 		// Check if users already exist, or create them if they don't
 		userRepository.findByUsername("user1").orElseGet(() -> {

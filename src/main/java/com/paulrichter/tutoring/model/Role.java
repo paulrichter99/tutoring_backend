@@ -2,8 +2,10 @@ package com.paulrichter.tutoring.model;
 
 import com.paulrichter.tutoring.Enum.ERole;
 import jakarta.persistence.*;
+import org.hibernate.Hibernate;
 
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -52,4 +54,16 @@ public class Role {
         this.id = id;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Role role = (Role) o;
+        return Objects.equals(((Role) o).getName(), this.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

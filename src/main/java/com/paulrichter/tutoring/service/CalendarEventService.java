@@ -11,6 +11,7 @@ import com.paulrichter.tutoring.repository.UserRepository;
 import com.paulrichter.tutoring.util.CalendarEventUtilService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +62,6 @@ public class CalendarEventService {
         List<User> userFromCalendarEvent = new ArrayList<>();
         // make sure we get the correct persisted user
         for(User eventUser: calendarEvent.getEventUsers()){
-            // TODO: We have to adjust/remove the event from the users, if cascading is not enough
-            //  -> Pls check
             this.userRepository.findByUsername(eventUser.getUsername()).ifPresent(userFromCalendarEvent::add);
         }
         persistedEvent.setEventUsers(userFromCalendarEvent);
@@ -87,12 +86,25 @@ public class CalendarEventService {
         // check date compatibility of the event
         if(!calendarEventUtilService.checkDateCompatibility(calendarEvent)) return null;
         // save the new CalendarEvent
+
+        // before saving we ensure to get the users by username from the database before we add the event
+        // else the saving will fail since the user is not valid
+        List<User> usersForEvent = new ArrayList<>();
+        for(User eventUser: calendarEvent.getEventUsers()){
+            // additionally set the calendarEventProperties for the user and date
+            User user = this.userRepository.findByUsername(eventUser.getUsername()).orElse(null);
+            if(user == null) {
+                return null;
+            }
+            usersForEvent.add(user);
+            user.getCalendarEvents().add(calendarEvent);
+        }
+        // set the real users for the event
+        calendarEvent.setEventUsers(usersForEvent);
+        System.out.println(calendarEvent.toString());
+
         calendarEventRepository.save(calendarEvent);
 
-        // set the calendarEventProperties for the user and date
-        for(User eventUser: calendarEvent.getEventUsers()){
-            this.userRepository.findByUsername(eventUser.getUsername()).ifPresent(user -> {user.getCalendarEvents().add(calendarEvent);});
-        }
 
         CalendarDate calendarDate = this.calendarDateRepository.findById(calendarEvent.getEventDate().getId()).orElse(null);
         if(calendarDate == null){ return null; }
