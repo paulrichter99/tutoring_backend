@@ -2,6 +2,7 @@ package com.paulrichter.tutoring.service;
 
 import com.paulrichter.tutoring.Enum.ERole;
 import com.paulrichter.tutoring.dto.user.UserDto;
+import com.paulrichter.tutoring.dto.user.UserDtoForEvent;
 import com.paulrichter.tutoring.dto.user.UserSettingsDto;
 import com.paulrichter.tutoring.model.Role;
 import com.paulrichter.tutoring.model.User;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -67,5 +69,18 @@ public class TutoringUserService {
         this.userRepository.save(changeUser);
 
         return ResponseEntity.ok(new UserDto(changeUser));
+    }
+
+    public List<UserDtoForEvent> findAllForEventDto(User currentUser){
+        List<UserDtoForEvent> allUserToReturn = new ArrayList<>();
+
+        List<User> allUser = this.userRepository.findAll();
+
+        for(User u: allUser){
+            if(Objects.equals(u.getUsername(), currentUser.getUsername())) continue;
+            allUserToReturn.add(new UserDtoForEvent(u.getUsername()));
+        }
+
+        return allUserToReturn;
     }
 }

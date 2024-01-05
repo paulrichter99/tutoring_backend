@@ -49,4 +49,10 @@ public class CalendarDate {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "dateTime = " + dateTime + ")";
+    }
 }

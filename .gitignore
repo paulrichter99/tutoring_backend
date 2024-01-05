@@ -36,3 +36,6 @@ build/
 
 ### mvn ###
 .mvn/
+
+### local uploads ###
+uploads/
