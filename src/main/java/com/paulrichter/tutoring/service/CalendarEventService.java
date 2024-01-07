@@ -101,7 +101,6 @@ public class CalendarEventService {
         }
         // set the real users for the event
         calendarEvent.setEventUsers(usersForEvent);
-        System.out.println(calendarEvent.toString());
 
         calendarEventRepository.save(calendarEvent);
 

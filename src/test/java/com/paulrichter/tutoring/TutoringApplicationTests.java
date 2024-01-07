@@ -17,7 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.*;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -51,6 +53,38 @@ class TutoringApplicationTests {
 		roleRepository.save(role_moderator);
 		roleRepository.save(role_tutor);
 		roleRepository.save(role_admin);
+	}
+
+	@Test
+	public void testCreateAdminAccount(){
+		userRepository.findByUsername("paulrichter99").orElseGet(() -> {
+			userController.registerUser(new SignupRequest("paulrichter99", "test1234"));
+			return userRepository.findByUsername("paulrichter99").orElse(null);
+		});
+
+		User persistedAdminUser = userRepository.findByUsername("paulrichter99").orElse(null);
+		assertNotNull(persistedAdminUser);
+
+		Set<Role> rolesForAdmin = new HashSet<>();
+		Role role_user = roleRepository.findByName(ERole.ROLE_USER).orElse(null);
+		assertNotNull(role_user);
+		rolesForAdmin.add(role_user);
+
+		Role role_moderator = roleRepository.findByName(ERole.ROLE_MODERATOR).orElse(null);
+		assertNotNull(role_moderator);
+		rolesForAdmin.add(role_moderator);
+
+		Role role_tutor = roleRepository.findByName(ERole.ROLE_TUTOR).orElse(null);
+		assertNotNull(role_tutor);
+		rolesForAdmin.add(role_tutor);
+
+		Role role_admin = roleRepository.findByName(ERole.ROLE_ADMIN).orElse(null);
+		assertNotNull(role_admin);
+		rolesForAdmin.add(role_admin);
+
+		persistedAdminUser.setRoles(rolesForAdmin);
+
+		userRepository.save(persistedAdminUser);
 	}
 
 	// TODO: make separate tests for separate things
