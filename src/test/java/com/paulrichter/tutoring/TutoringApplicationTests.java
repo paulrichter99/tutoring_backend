@@ -13,6 +13,7 @@ import com.paulrichter.tutoring.repository.RoleRepository;
 import com.paulrichter.tutoring.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.*;
@@ -42,6 +43,12 @@ class TutoringApplicationTests {
 	@Autowired
 	UserController userController;
 
+	@Value("${tutoring.app.mainUserName}")
+	private String adminUsername;
+
+	@Value("${tutoring.app.adminPassword}")
+	private String adminPassword;
+
 	@Test
 	public void testCreateRole(){
 		Role role_user = roleRepository.findByName(ERole.ROLE_USER).orElse(new Role(ERole.ROLE_USER));
@@ -57,12 +64,12 @@ class TutoringApplicationTests {
 
 	@Test
 	public void testCreateAdminAccount(){
-		userRepository.findByUsername("paulrichter99").orElseGet(() -> {
-			userController.registerUser(new SignupRequest("paulrichter99", "test1234"));
-			return userRepository.findByUsername("paulrichter99").orElse(null);
+		userRepository.findByUsername(adminUsername).orElseGet(() -> {
+			userController.registerUser(new SignupRequest(adminUsername, adminPassword));
+			return userRepository.findByUsername(adminUsername).orElse(null);
 		});
 
-		User persistedAdminUser = userRepository.findByUsername("paulrichter99").orElse(null);
+		User persistedAdminUser = userRepository.findByUsername(adminUsername).orElse(null);
 		assertNotNull(persistedAdminUser);
 
 		Set<Role> rolesForAdmin = new HashSet<>();
