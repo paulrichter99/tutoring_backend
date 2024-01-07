@@ -40,3 +40,4 @@ build/
 ### local uploads ###
 uploads/
 src/main/resources/application.properties
+src/main/resources/application-prod.properties

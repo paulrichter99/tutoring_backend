@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.paulrichter</groupId>
 	<artifactId>tutoring</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>tutoring</name>
 	<description>Tutoring-app backend for Students of Paul Richter</description>
 	<properties>
@@ -148,6 +148,11 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<profiles>
+						<profile>prod</profile>
+					</profiles>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
