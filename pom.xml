@@ -159,6 +159,31 @@
 
 	<profiles>
 		<profile>
+			<id>prod</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<activeProfile>prod</activeProfile>
+			</properties>
+		</profile>
+
+		<!--dev -->
+		<profile>
+			<id>dev</id>
+			<properties>
+				<activeProfile>dev</activeProfile>
+			</properties>
+		</profile>
+		<!--local-->
+		<profile>
+			<id>local</id>
+			<properties>
+				<activeProfile>local</activeProfile>
+			</properties>
+		</profile>
+
+		<profile>
 			<id>production</id>
 			<build>
 				<plugins>
